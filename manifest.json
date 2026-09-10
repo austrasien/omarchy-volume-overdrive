@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "austraz.audio",
+  "name": "Volume Overdrive",
+  "version": "2.0.0",
+  "author": "austrasien",
+  "license": "MIT",
+  "description": "Audio bar widget + OSD with output volume up to 200%, 100% notch, and red overdrive fill.",
+  "kinds": [
+    "bar-widget",
+    "panel"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "barWidget": "Panel.qml",
+    "panel": "Osd.qml"
+  },
+  "barWidget": {
+    "displayName": "Volume Overdrive",
+    "description": "Volume slider (0–200%), output picker, per-app mixer; pairs with the bundled overdrive OSD",
+    "category": "Audio",
+    "aliases": [
+      "audio",
+      "volume",
+      "osd"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right"
+  },
+  "omarchy": {
+    "clonedFrom": "omarchy.osd"
+  }
+}

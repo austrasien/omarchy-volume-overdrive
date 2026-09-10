@@ -433,7 +433,9 @@ Panel {
   function showVolumeOsd(volume) {
     if (!bar || !bar.shell) return
     var percent = Math.round(volume * 100)
-    bar.shell.summon("omarchy.osd", JSON.stringify({
+    // Own panel id (multi-kind). Stock callers still use "omarchy.osd";
+    // clonedFrom routes those to this plugin when omarchy.osd is disabled.
+    bar.shell.summon("austraz.audio", JSON.stringify({
       icon: outputIcon(volume),
       value: percent,
       max: 200,
