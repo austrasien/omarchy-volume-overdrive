@@ -78,12 +78,19 @@ elif [[ $action =~ ^([+-])([0-9]+)$ ]]; then
     echo "Could not read volume for $sink." >&2
     exit 1
   fi
+  current=$(printf '%.0f' "$current")
 
+  # Snap to the next/previous multiple of the step instead of adding blindly,
+  # so a slider at 76% then VOL+ lands on 80%, not 81%.
   if [[ $direction == "+" ]]; then
-    next=$((current + step))
+    next=$(( (current / step + 1) * step ))
     ((next <= MAX_PERCENT)) || next=$MAX_PERCENT
   else
-    next=$((current - step))
+    if ((current % step == 0)); then
+      next=$((current - step))
+    else
+      next=$(( (current / step) * step ))
+    fi
     ((next >= 0)) || next=0
   fi
 

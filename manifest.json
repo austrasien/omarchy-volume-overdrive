@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "austraz.audio",
   "name": "Volume Overdrive",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "austrasien",
   "license": "MIT",
   "description": "Audio bar widget + OSD with output volume up to 200%, 100% notch, and red overdrive fill.",

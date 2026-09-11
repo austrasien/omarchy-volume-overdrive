@@ -34,7 +34,7 @@ Questions or bugs → [issues](https://github.com/austrasien/omarchy-volume-over
 | :--- | :--- |
 | `Panel.qml` + `Model.js` | Bar audio widget: output slider `0..2`, notch + red fill above 100% |
 | `Osd.qml` + `OsdModel.js` | keepLoaded OSD panel: notch at real 100%, urgent fill past NORM |
-| `bin/omarchy-audio-output-volume` | User PATH override: clamp 200%, OSD payload `max: 200` |
+| `bin/omarchy-audio-output-volume` | User PATH override: clamp 200%, snap VOL± to 5% steps, OSD payload `max: 200` |
 | `manifest.json` | `kinds: ["bar-widget", "panel"]`, `clonedFrom: omarchy.osd` |
 
 `clonedFrom: omarchy.osd` is intentional: first-party media / monitor / `omarchy-osd` still address `omarchy.osd`, and the shell resolves them to this plugin once stock OSD is disabled. The audio bar widget is third-party style — put it on the bar and disable stock `omarchy.audio`.
@@ -78,8 +78,9 @@ If you previously copied `plugins/austraz.audio` **and** `plugins/austraz.osd` s
 ## Verify
 
 1. Raise volume past 100% with media keys → OSD shows a notch at mid-bar and red fill above it; readout goes to 200%.
-2. Open the audio panel → same notch / red overdrive on the output slider; drag above 100% works.
-3. Brightness / media OSDs still appear (routed through this panel via `omarchy.osd` clone resolution).
+2. Slider at 76% then **VOL+** → OSD shows **80%** (next 5% step, not 81%). **Alt+VOL** stays 1%.
+3. Open the audio panel → same notch / red overdrive on the output slider; drag above 100% works.
+4. Brightness / media OSDs still appear (routed through this panel via `omarchy.osd` clone resolution).
 
 ---
 
