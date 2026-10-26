@@ -37,6 +37,12 @@ Questions or bugs → [issues](https://github.com/austrasien/omarchy-volume-over
 | `bin/omarchy-audio-output-volume` | User PATH override: clamp 200%, snap VOL± to 5% steps, OSD payload `max: 200` |
 | `manifest.json` | `kinds: ["bar-widget", "panel"]`, `clonedFrom: omarchy.osd` |
 
+**Minimap.** When [austraz.minimap](https://github.com/austrasien/omarchy-minimap) is installed and on screen, the OSD hands itself over (`omarchy-shell austraz.minimap osd …` answers `ok`) and shows in the minimap's middle circle. Any other answer — minimap disabled, hidden, not loaded — and the usual card shows.
+
+**Keyboard backlight.** On laptops where the embedded controller steps the keyboard backlight itself (Framework: Fn+Space), there is no key event to bind, so the OSD watches `/sys/class/leds/*kbd_backlight*/brightness` and shows any change.
+
+**Held keys.** The volume wrapper serialises its runs with a short lock, so a held VOL± keeps stepping instead of stalling when repeats overlap; repeats that would only pile up are dropped, so the level stops as soon as the key is released.
+
 `clonedFrom: omarchy.osd` is intentional: first-party media / monitor / `omarchy-osd` still address `omarchy.osd`, and the shell resolves them to this plugin once stock OSD is disabled. The audio bar widget is third-party style — put it on the bar and disable stock `omarchy.audio`.
 
 ---
