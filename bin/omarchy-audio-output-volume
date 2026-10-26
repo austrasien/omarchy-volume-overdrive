@@ -73,6 +73,13 @@ elif [[ $action =~ ^([+-])([0-9]+)$ ]]; then
   direction="${BASH_REMATCH[1]}"
   step="${BASH_REMATCH[2]}"
 
+  # A held key repeats faster than one run finishes: without the lock, runs
+  # read the same volume and land on the same step, so the level stalls.
+  # Repeats that can't get it soon are dropped, so the level stops moving as
+  # soon as the key is released instead of working through a backlog.
+  exec 9>"${XDG_RUNTIME_DIR:-/tmp}/omarchy-audio-output-volume.lock"
+  flock -w 0.15 9 || exit 0
+
   current="$(volume_percent)"
   if [[ -z $current ]]; then
     echo "Could not read volume for $sink." >&2
@@ -102,6 +109,7 @@ else
 fi
 
 percent=$(volume_percent)
+exec 9>&-   # the OSD can go out while the next run already steps
 if volume_muted || ((${percent:-0} == 0)); then
   icon="volume-muted"
 else
