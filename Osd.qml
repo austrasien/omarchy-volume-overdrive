@@ -93,6 +93,48 @@ Item {
     }
   }
 
+  // Fn+Space steps the keyboard backlight inside the embedded controller,
+  // with no key event for the desktop to bind, so the level itself is
+  // watched and any change shows the keyboard OSD. Sysfs gives no change
+  // notification for it: a light poll does.
+  property string kbdDevice: ""
+  property int kbdMax: 0
+  property int kbdLast: -1
+
+  Process {
+    running: true
+    command: ["sh", "-c", "for d in /sys/class/leds/*kbd_backlight*; do [ -e \"$d\" ] && echo \"$d\" && cat \"$d/max_brightness\" && break; done"]
+    stdout: StdioCollector {
+      onStreamFinished: {
+        var lines = text.trim().split("\n")
+        if (lines.length !== 2) return
+        root.kbdMax = parseInt(lines[1], 10) || 0
+        root.kbdDevice = lines[0]
+      }
+    }
+  }
+
+  FileView {
+    id: kbdLevel
+    path: root.kbdDevice !== "" ? root.kbdDevice + "/brightness" : ""
+    onLoaded: root.kbdRead(text())
+  }
+
+  Timer {
+    interval: 250
+    repeat: true
+    running: root.kbdDevice !== "" && root.kbdMax > 0
+    onTriggered: kbdLevel.reload()
+  }
+
+  function kbdRead(raw) {
+    var v = parseInt(raw, 10)
+    if (isNaN(v)) return
+    if (kbdLast >= 0 && v !== kbdLast)
+      show("keyboard", "", String(Math.round(v * 100 / kbdMax)), "100", "", "1200")
+    kbdLast = v
+  }
+
   function showLocal(next) {
     // Update before opening so a fresh OSD starts at its new value; only
     // subsequent updates while it remains open animate the progress bar.
