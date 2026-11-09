@@ -64,14 +64,14 @@ Item {
     forward(OsdModel.stateForShow(iconName, rawMessage, rawValue, rawMax, rawProgressText, rawDuration))
   }
 
-  // The minimap (austraz.minimap), when it is loaded and on screen, shows
-  // the OSD in its middle circle and answers "ok". Any other answer (plugin
-  // off, minimap hidden, shell busy) and the card shows here as usual.
+  // The day line (austraz.dayline), when it is loaded, shows
+  // the OSD along the bottom edge and answers "ok". Any other answer (plugin
+  // off, shell busy) and the card shows here as usual.
   property var pendingForward: null
   function forward(next) {
     if (forwarder.running) { pendingForward = next; return }
     forwarder.next = next
-    forwarder.command = ["omarchy-shell", "austraz.minimap", "osd", JSON.stringify(next)]
+    forwarder.command = ["omarchy-shell", "austraz.dayline", "osd", JSON.stringify(next)]
     forwarder.running = true
   }
 
@@ -159,7 +159,7 @@ Item {
 
   function close() {
     opened = false
-    Quickshell.execDetached(["omarchy-shell", "-q", "austraz.minimap", "closeOsd"])
+    Quickshell.execDetached(["omarchy-shell", "-q", "austraz.dayline", "closeOsd"])
   }
 
   Timer {
