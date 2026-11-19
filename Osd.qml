@@ -67,11 +67,16 @@ Item {
   // The day line (austraz.dayline), when it is loaded, shows
   // the OSD along the bottom edge and answers "ok". Any other answer (plugin
   // off, shell busy) and the card shows here as usual.
+  // Show and close go through this one queue, in order: a close sent on its
+  // own could reach the day line before a show still in flight, and a
+  // duration-0 card (app launch feedback) would then stay up for good.
   property var pendingForward: null
   function forward(next) {
     if (forwarder.running) { pendingForward = next; return }
     forwarder.next = next
-    forwarder.command = ["omarchy-shell", "austraz.dayline", "osd", JSON.stringify(next)]
+    forwarder.command = next.close
+      ? ["omarchy-shell", "austraz.dayline", "closeOsd"]
+      : ["omarchy-shell", "austraz.dayline", "osd", JSON.stringify(next)]
     forwarder.running = true
   }
 
@@ -80,6 +85,7 @@ Item {
     property var next: null
     stdout: StdioCollector {
       onStreamFinished: {
+        if (forwarder.next && forwarder.next.close) return
         if (text.trim() === "ok") root.opened = false
         else root.showLocal(forwarder.next)
       }
@@ -159,7 +165,8 @@ Item {
 
   function close() {
     opened = false
-    Quickshell.execDetached(["omarchy-shell", "-q", "austraz.dayline", "closeOsd"])
+    hideTimer.stop()
+    forward({ close: true })
   }
 
   Timer {
